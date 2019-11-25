@@ -51,6 +51,48 @@ typedef struct cipher_state {
     AArch64crypto_cipher_constants_t * constants;
 } AArch64crypto_cipher_state_t;
 
+typedef struct {
+	struct {
+		uint8_t *key;
+		uint8_t *iv;
+	} cipher;
+	struct {
+		struct {
+			uint8_t *key;
+			uint8_t *i_key_pad;
+			uint8_t *o_key_pad;
+		} hmac;
+	} digest;
+} AArch64crypto_cipher_digest_t;
+
+/*
+ * Auxiliary calls for AES-CBC/SHA
+ */
+void AArch64crypto_aes_cbc_expandkeys_128_enc(uint8_t *expanded_key, const uint8_t *user_key);
+void AArch64crypto_aes_cbc_expandkeys_128_dec(uint8_t *expanded_key, const uint8_t *user_key);
+int AArch64crypto_sha1_block_partial(uint8_t *init, const uint8_t *src, uint8_t *dst,
+			uint64_t len);
+int AArch64crypto_sha256_block_partial(uint8_t *init, const uint8_t *src, uint8_t *dst,
+			uint64_t len);
+/*
+ * Main interface calls for AES-CBC+SHA1/256 encryption and decryption
+ */
+int AArch64crypto_encrypt_aes128cbc_sha1(
+			uint8_t *csrc, uint8_t *cdst, uint64_t clen,
+			uint8_t *dsrc, uint8_t *ddst, uint64_t dlen,
+			AArch64crypto_cipher_digest_t *arg);
+int AArch64crypto_encrypt_aes128cbc_sha256(
+			uint8_t *csrc, uint8_t *cdst, uint64_t clen,
+			uint8_t *dsrc, uint8_t *ddst, uint64_t dlen,
+			AArch64crypto_cipher_digest_t *arg);
+int AArch64crypto_decrypt_aes128cbc_sha1(
+			uint8_t *csrc, uint8_t *cdst, uint64_t clen,
+			uint8_t *dsrc, uint8_t *ddst, uint64_t dlen,
+			AArch64crypto_cipher_digest_t *arg);
+int AArch64crypto_decrypt_aes128cbc_sha256(
+			uint8_t *csrc, uint8_t *cdst, uint64_t clen,
+			uint8_t *dsrc, uint8_t *ddst, uint64_t dlen,
+			AArch64crypto_cipher_digest_t *arg);
 
 // set the cipher_constants
 AArch64crypto_operation_result_t AArch64crypto_aes_gcm_set_constants(
