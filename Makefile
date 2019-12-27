@@ -2,6 +2,7 @@
 #   BSD LICENSE
 #
 #   Copyright (C) Cavium networks Ltd. 2016.
+#   Copyright (c) 2019-2020 Arm Limited
 #
 #   Redistribution and use in source and binary forms, with or without
 #   modification, are permitted provided that the following conditions
@@ -32,11 +33,26 @@
 
 SRCDIR := ${CURDIR}
 OBJDIR := ${CURDIR}/obj
+
+#DEFINE += -DTEST_DEBUG
+
 # build flags
 CC = gcc
 CFLAGS += -O3
 CFLAGS += -Wall -static
 CFLAGS += -I$(SRCDIR)
+CFLAGS += -march=armv8-a+simd+crypto
+CFLAGS += -flax-vector-conversions
+CFLAGS += $(DEFINE)
+CFLAGS += $(EXTRA_CFLAGS)
+
+# Customizable optimization flags
+ifneq (,$(filter $(OPT),little LITTLE))
+CFLAGS += -DPERF_GCM_LITTLE -mtune=cortex-a53
+else ifeq ($(OPT),big)
+CFLAGS += -DPERF_GCM_BIG -mtune=cortex-a57
+else
+endif
 
 # library AES-CBC c files
 SRCS += $(SRCDIR)/AArch64cryptolib_aes_cbc.c
@@ -48,17 +64,30 @@ SRCS += $(SRCDIR)/AArch64cryptolib_opt_big/aes_cbc_sha1/aes128cbc_sha1_hmac.S
 SRCS += $(SRCDIR)/AArch64cryptolib_opt_big/aes_cbc_sha256/aes128cbc_sha256_hmac.S
 SRCS += $(SRCDIR)/AArch64cryptolib_opt_big/aes_cbc_sha1/sha1_hmac_aes128cbc_dec.S
 SRCS += $(SRCDIR)/AArch64cryptolib_opt_big/aes_cbc_sha256/sha256_hmac_aes128cbc_dec.S
+# library AES-GCM c files
+SRCS += $(SRCDIR)/AArch64cryptolib_aes_gcm.c
 
 OBJS  := $(SRCS:.S=.o)
 OBJS  += $(SRCS:.c=.o)
 
-# runtime generated assembly symbols
-all: libAArch64crypto.a
+# List of unit test executable files
+TEST_TARGETS = aesgcm_test_functional aesgcm_test_speed
+TEST_SRCS += $(SRCDIR)/test/aesgcm_test_functional.c
+TEST_SRCS += $(SRCDIR)/test/aesgcm_test_speed.c
+TEST_OBJS += $(TEST_SRCS:.c=.o)
+
+
+all: libAArch64crypto.a $(TEST_TARGETS)
 
 .PHONY:	clean
 clean:
-	@rm -rf $(SRCDIR)/assym.s *.a $(OBJDIR)
+	@rm -rf $(SRCDIR)/assym.s *.a $(OBJDIR) $(TEST_TARGETS)
 
+$(TEST_TARGETS): $(TEST_OBJS) libAArch64crypto.a
+	@echo "--- Linking $@"
+	$(CC) $(CFLAGS) -L$(SRCDIR) $(OBJDIR)/$(addsuffix .o,$@) -lAArch64crypto -o $@
+
+# build-time generated assembly symbols
 assym.s: genassym.c
 	@$(CC) $(CFLAGS) -O0 -S $< -o - | \
 		awk '($$1 == "<genassym>") { print "#define " $$2 "\t" $$3 }' > \

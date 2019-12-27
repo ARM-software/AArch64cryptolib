@@ -1,0 +1,18 @@
+# Copyright (c) 2018-2019, ARM Limited. All rights reserved.
+#
+# SPDX-License-Identifier:        BSD-3-Clause
+
+[Keylen = 128]
+[IVlen = 96]
+[PTlen = 384]
+[AADlen = 96]
+[Taglen = 128]
+
+Count = 1000000
+Key = cafef00ddeadbeef0123456789abcdef
+IV = deadbeef0123456789abcdef
+PT = ffffeeeeddddccccbbbbaaaa9999888877776666555544443333222211110000f0f0e0e0d0d0c0c0b0b0a0a090908080
+AAD = deadbeef0123456789abcdef
+CT = 9bdefe75df742d33df85d8657ed47704dda4e0e4b0b3052e8fea0275c39fec0e2519c08d4b6080fcb02d7c601d6573ae
+Tag = 8ae642fb18d64b06fd4041071486d930
+
