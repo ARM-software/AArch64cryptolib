@@ -71,9 +71,11 @@ OBJS  := $(SRCS:.S=.o)
 OBJS  += $(SRCS:.c=.o)
 
 # List of unit test executable files
-TEST_TARGETS = aesgcm_test_functional aesgcm_test_speed
+TEST_TARGETS = aesgcm_test_functional aesgcm_test_speed aescbc_test_functional aescbc_test_speed
 TEST_SRCS += $(SRCDIR)/test/aesgcm_test_functional.c
 TEST_SRCS += $(SRCDIR)/test/aesgcm_test_speed.c
+TEST_SRCS += $(SRCDIR)/test/aescbc_test_functional.c
+TEST_SRCS += $(SRCDIR)/test/aescbc_test_speed.c
 TEST_OBJS += $(TEST_SRCS:.c=.o)
 
 

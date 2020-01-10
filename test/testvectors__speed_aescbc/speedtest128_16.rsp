@@ -1,0 +1,12 @@
+# Copyright (c) 2018-2019, ARM Limited. All rights reserved.
+#
+# SPDX-License-Identifier:        BSD-3-Clause
+#
+# Key Length : 128
+
+COUNT = 1000000
+KEY = 762b71759a5b7232803f295adaddb4d6
+IV = 3accd081184ec3c5c627a4b96b8d953b
+PLAINTEXT = 5185ac06a8291b32b9caa169dc357ef2
+CIPHERTEXT = 33b26e76891114ea686e677ef6ca724d
+

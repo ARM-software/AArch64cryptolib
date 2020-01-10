@@ -56,7 +56,7 @@ This is a synthetic test, and as we are reusing the same memory regions repeated
 The focus is currently only on CPUs which have the **Cryptographic extension** - trying to do any algorithm based on AES without it is a very different problem.
 
 ## License
-Files in folder `testvectors__NIST_aesgcm` are downloaded from NIST:
+Files in folder `testvectors__NIST_aesgcm` and `testvectors__NIST_aescbc` are downloaded from NIST:
 https://csrc.nist.gov/Projects/Cryptographic-Algorithm-Validation-Program/
 
 For other files, please refer to file header for license info.
