@@ -49,10 +49,10 @@ static void __attribute__((__unused__))
 generate_as_symbols(void)
 {
 
-	ASSYM(CIPHER_KEY, offsetof(AArch64crypto_cipher_digest_t, cipher.key));
-	ASSYM(CIPHER_IV, offsetof(AArch64crypto_cipher_digest_t, cipher.iv));
+	ASSYM(CIPHER_KEY, offsetof(armv8_cipher_digest_t, cipher.key));
+	ASSYM(CIPHER_IV, offsetof(armv8_cipher_digest_t, cipher.iv));
 
-	ASSYM(HMAC_KEY, offsetof(AArch64crypto_cipher_digest_t, digest.hmac.key));
-	ASSYM(HMAC_IKEYPAD, offsetof(AArch64crypto_cipher_digest_t, digest.hmac.i_key_pad));
-	ASSYM(HMAC_OKEYPAD, offsetof(AArch64crypto_cipher_digest_t, digest.hmac.o_key_pad));
+	ASSYM(HMAC_KEY, offsetof(armv8_cipher_digest_t, digest.hmac.key));
+	ASSYM(HMAC_IKEYPAD, offsetof(armv8_cipher_digest_t, digest.hmac.i_key_pad));
+	ASSYM(HMAC_OKEYPAD, offsetof(armv8_cipher_digest_t, digest.hmac.o_key_pad));
 }

@@ -13,7 +13,7 @@
 
 #define MAX_LINE_LEN 128
 
-#define operation_result_t  AArch64crypto_operation_result_t
+#define operation_result_t  armv8_operation_result_t
 
 #ifndef TEST_DEBUG
 #define TEST_DEBUG_PRINTF 0
@@ -44,7 +44,7 @@ bool __attribute__ ((noinline)) test_reference(uint64_t block_byte_length,
                     bool verbose)
 {
     bool success = true;
-    AArch64crypto_cipher_digest_t arg;
+    armv8_cipher_digest_t arg;
     uint8_t key_expanded[256] = {0};
     uint8_t * output;
     uint8_t * auth;
@@ -63,10 +63,10 @@ bool __attribute__ ((noinline)) test_reference(uint64_t block_byte_length,
         //// Encrypt reference plaintext and check output with reference ciphertext and tag
         if(verbose) printf("\n\nENCRYPTION TEST\n");
 
-        AArch64crypto_aes_cbc_expandkeys_128_enc(key_expanded, key);
+        armv8_expandkeys_enc_aes_cbc_128(key_expanded, key);
         arg.cipher.key = key_expanded;
         arg.cipher.iv = iv;
-        operation_result_t encrypt_result = AArch64crypto_encrypt_aes128cbc_sha1(
+        operation_result_t encrypt_result = armv8_enc_aes_cbc_sha1_128(
                 reference_plaintext, output, block_byte_length,
                 reference_plaintext, auth, block_byte_length,
                 &arg);
@@ -108,10 +108,10 @@ bool __attribute__ ((noinline)) test_reference(uint64_t block_byte_length,
         //// Decrypt reference ciphertext and check output with reference plaintext and tag
         if(verbose) printf("\n\nDECRYPTION TEST\n");
 
-        AArch64crypto_aes_cbc_expandkeys_128_dec(key_expanded, key);
+        armv8_expandkeys_dec_aes_cbc_128(key_expanded, key);
         arg.cipher.key = key_expanded;
         arg.cipher.iv = iv;
-        operation_result_t decrypt_result = AArch64crypto_decrypt_aes128cbc_sha1(
+        operation_result_t decrypt_result = armv8_dec_aes_cbc_sha1_128(
                 reference_ciphertext, output, block_byte_length,
                 output, auth, block_byte_length,
                 &arg);

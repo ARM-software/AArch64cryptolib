@@ -301,7 +301,7 @@ v30-v31 various temps
 // Given a set up cipher_constants_t and the IPsec salt and ESPIV, perform decryption in place and checksum on the produced plaintext
 static operation_result_t decrypt_from_constants_IPsec_192(
     //Inputs
-    const AArch64crypto_cipher_constants_t * cc,
+    const armv8_cipher_constants_t * cc,
     uint32_t salt,
     uint64_t ESPIV,
     const uint8_t * restrict aad, uint64_t aad_byte_length,

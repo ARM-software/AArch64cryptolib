@@ -45,7 +45,7 @@
  * Prototype:
  * int asm_aes128cbc_sha1_hmac(uint8_t *csrc, uint8_t *cdst, uint64_t clen,
  *			uint8_t *dsrc, uint8_t *ddst, uint64_t dlen,
- *			AArch64crypto_cipher_digest_t *arg)
+ *			armv8_cipher_digest_t *arg)
  *
  * Registers used:
  *

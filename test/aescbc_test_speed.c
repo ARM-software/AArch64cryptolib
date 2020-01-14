@@ -14,7 +14,7 @@
 
 #define MAX_LINE_LEN 128
 
-#define operation_result_t  AArch64crypto_operation_result_t
+#define operation_result_t  armv8_operation_result_t
 
 #ifndef TEST_DEBUG
 #define TEST_DEBUG_PRINTF 0
@@ -70,7 +70,7 @@ void process_test_file(FILE * fin, uint64_t test_count, bool encrypt,
                     if(new_reference)
                     {
                         operation_result_t result = SUCCESSFUL_OPERATION;
-                        AArch64crypto_cipher_digest_t arg;
+                        armv8_cipher_digest_t arg;
                         uint8_t key_expanded[256] = {0};
                         uint8_t *output;
                         uint8_t *auth;
@@ -84,11 +84,11 @@ void process_test_file(FILE * fin, uint64_t test_count, bool encrypt,
                         arg.digest.hmac.o_key_pad = key;
                         if(encrypt)
                         {
-                            AArch64crypto_aes_cbc_expandkeys_128_enc(key_expanded, key);
+                            armv8_expandkeys_enc_aes_cbc_128(key_expanded, key);
                             arg.cipher.key = key_expanded;
                             arg.cipher.iv = iv;
                             for(uint64_t i=0; i<test_count; ++i) {
-                                result |= AArch64crypto_encrypt_aes128cbc_sha1(
+                                result |= armv8_enc_aes_cbc_sha1_128(
                                             pt, output, plaintext_byte_length,
                                             pt, auth, plaintext_byte_length,
                                             &arg);
@@ -107,11 +107,11 @@ void process_test_file(FILE * fin, uint64_t test_count, bool encrypt,
 #endif
                             }
                         } else {
-                            AArch64crypto_aes_cbc_expandkeys_128_dec(key_expanded, key);
+                            armv8_expandkeys_dec_aes_cbc_128(key_expanded, key);
                             arg.cipher.key = key_expanded;
                             arg.cipher.iv = iv;
                             for(uint64_t i=0; i<test_count; ++i) {
-                                result |= AArch64crypto_decrypt_aes128cbc_sha1(
+                                result |= armv8_dec_aes_cbc_sha1_128(
                                             ct, output, plaintext_byte_length,
                                             output, auth, plaintext_byte_length,
                                             &arg);

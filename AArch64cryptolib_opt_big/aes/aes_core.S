@@ -34,10 +34,10 @@
 	.text
 	.cpu generic+fp+simd+crypto+crc
 	.align	4
-	.global	AArch64crypto_aes_cbc_expandkeys_128_enc
-	.type	AArch64crypto_aes_cbc_expandkeys_128_enc, %function
-	.global	AArch64crypto_aes_cbc_expandkeys_128_dec
-	.type	AArch64crypto_aes_cbc_expandkeys_128_dec, %function
+	.global	armv8_expandkeys_enc_aes_cbc_128
+	.type	armv8_expandkeys_enc_aes_cbc_128, %function
+	.global	armv8_expandkeys_dec_aes_cbc_128
+	.type	armv8_expandkeys_dec_aes_cbc_128, %function
 
 	/*
 	 * AES key expand algorithm for single round.
@@ -68,7 +68,7 @@
  * *expanded_key, *user_key
  */
 	.align	4
-AArch64crypto_aes_cbc_expandkeys_128_enc:
+armv8_expandkeys_enc_aes_cbc_128:
 	sub	sp,sp,4*16
 	st1	{v8.16b - v11.16b},[sp]
 	ld1	{v0.16b},[x1]				/* user_key */
@@ -97,13 +97,13 @@ AArch64crypto_aes_cbc_expandkeys_128_enc:
 	add	sp,sp,4*16
 	ret
 
-	.size	AArch64crypto_aes_cbc_expandkeys_128_enc, .-AArch64crypto_aes_cbc_expandkeys_128_enc
+	.size	armv8_expandkeys_enc_aes_cbc_128, .-armv8_expandkeys_enc_aes_cbc_128
 
 /*
  * *expanded_key, *user_key
  */
 	.align	4
-AArch64crypto_aes_cbc_expandkeys_128_dec:
+armv8_expandkeys_dec_aes_cbc_128:
 	sub	sp,sp,4*16
 	st1	{v8.16b-v11.16b},[sp]
 	ld1	{v0.16b},[x1]				/* user_key */
@@ -148,4 +148,4 @@ AArch64crypto_aes_cbc_expandkeys_128_dec:
 	add	sp,sp,4*16
 	ret
 
-	.size	AArch64crypto_aes_cbc_expandkeys_128_dec, .-AArch64crypto_aes_cbc_expandkeys_128_dec
+	.size	armv8_expandkeys_dec_aes_cbc_128, .-armv8_expandkeys_dec_aes_cbc_128

@@ -20,20 +20,20 @@
 #define TEST_DEBUG_PRINTF 1
 #endif
 
-#define cipher_mode_t       AArch64crypto_cipher_mode_t
-#define operation_result_t  AArch64crypto_operation_result_t
-#define doubleword_t        AArch64crypto_doubleword_t
-#define quadword_t          AArch64crypto_quadword_t
-#define cipher_constants_t  AArch64crypto_cipher_constants_t
-#define cipher_state_t      AArch64crypto_cipher_state_t
+#define cipher_mode_t       armv8_cipher_mode_t
+#define operation_result_t  armv8_operation_result_t
+#define doubleword_t        armv8_doubleword_t
+#define quadword_t          armv8_quadword_t
+#define cipher_constants_t  armv8_cipher_constants_t
+#define cipher_state_t      armv8_cipher_state_t
 
-#define aes_gcm_set_counter             AArch64crypto_aes_gcm_set_counter
-#define encrypt_full                    AArch64crypto_encrypt_full
-#define encrypt_from_state              AArch64crypto_encrypt_from_state
-#define encrypt_from_constants_IPsec    AArch64crypto_encrypt_from_constants_IPsec
-#define decrypt_full                    AArch64crypto_decrypt_full
-#define decrypt_from_state              AArch64crypto_decrypt_from_state
-#define decrypt_from_constants_IPsec    AArch64crypto_decrypt_from_constants_IPsec
+#define aes_gcm_set_counter             armv8_aes_gcm_set_counter
+#define encrypt_full                    armv8_enc_aes_gcm_full
+#define encrypt_from_state              armv8_enc_aes_gcm_from_state
+#define encrypt_from_constants_IPsec    armv8_enc_aes_gcm_from_constants_IPsec
+#define decrypt_full                    armv8_dec_aes_gcm_full
+#define decrypt_from_state              armv8_dec_aes_gcm_from_state
+#define decrypt_from_constants_IPsec    armv8_dec_aes_gcm_from_constants_IPsec
 
 #define aesgcm_debug_printf(...) \
     do { if (TEST_DEBUG_PRINTF) printf(__VA_ARGS__); } while (0)
@@ -682,7 +682,7 @@ void process_test_file(FILE * fin)
                     }
                     while( fgetc(fin) != '\n' ) {}
                     operation_result_t result;
-                    result = AArch64crypto_aes_gcm_set_constants(cs.constants->mode, cs.constants->tag_byte_length, temp_key, &cc);
+                    result = armv8_aes_gcm_set_constants(cs.constants->mode, cs.constants->tag_byte_length, temp_key, &cc);
                     aesgcm_debug_printf("Key start\n");
                     if(result != SUCCESSFUL_OPERATION) {
                         printf("Failure in key expansion!\n");

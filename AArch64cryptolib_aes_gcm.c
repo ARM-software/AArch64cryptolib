@@ -34,42 +34,18 @@
 #define vget_high_p64 vget_high_u64
 #endif
 
-#define cipher_mode_t                   AArch64crypto_cipher_mode_t
-#define operation_result_t              AArch64crypto_operation_result_t
-#define quadword_t                      AArch64crypto_quadword_t
-#define cipher_constants_t              AArch64crypto_cipher_constants_t
-#define cipher_state_t                  AArch64crypto_cipher_state_t
+#define cipher_mode_t                   armv8_cipher_mode_t
+#define operation_result_t              armv8_operation_result_t
+#define quadword_t                      armv8_quadword_t
+#define cipher_constants_t              armv8_cipher_constants_t
+#define cipher_state_t                  armv8_cipher_state_t
 
-#define encrypt_full                    AArch64crypto_encrypt_full
-#define encrypt_from_state              AArch64crypto_encrypt_from_state
-#define encrypt_from_constants_IPsec    AArch64crypto_encrypt_from_constants_IPsec
-#define decrypt_full                    AArch64crypto_decrypt_full
-#define decrypt_from_state              AArch64crypto_decrypt_from_state
-#define decrypt_from_constants_IPsec    AArch64crypto_decrypt_from_constants_IPsec
-
-#define aes_gcm_expandkeys_128_kernel   AArch64crypto_aes_gcm_expandkeys_128_kernel
-#define aes_gcm_expandkeys_192_kernel   AArch64crypto_aes_gcm_expandkeys_192_kernel
-#define aes_gcm_expandkeys_256_kernel   AArch64crypto_aes_gcm_expandkeys_256_kernel
-
-#define ghash_kernel                    AArch64crypto_ghash_kernel
-
-#define aes_ctr_blk_128_kernel          AArch64crypto_aes_ctr_blk_128_kernel
-#define aes_ctr_blk_192_kernel          AArch64crypto_aes_ctr_blk_192_kernel
-#define aes_ctr_blk_256_kernel          AArch64crypto_aes_ctr_blk_256_kernel
-
-#define aes_gcm_enc_128_kernel          AArch64crypto_aes_gcm_enc_128_kernel
-#define aes_gcm_enc_192_kernel          AArch64crypto_aes_gcm_enc_192_kernel
-#define aes_gcm_enc_256_kernel          AArch64crypto_aes_gcm_enc_256_kernel
-
-#define aes_gcm_dec_128_kernel          AArch64crypto_aes_gcm_dec_128_kernel
-#define aes_gcm_dec_192_kernel          AArch64crypto_aes_gcm_dec_192_kernel
-#define aes_gcm_dec_256_kernel          AArch64crypto_aes_gcm_dec_256_kernel
-
-#define aes_gcm_finalize                AArch64crypto_aes_gcm_finalize
-
-#define rcon                            AArch64crypto_rcon
-
-#define rijndael_sbox                   AArch64crypto_rijndael_sbox
+#define encrypt_full                    armv8_enc_aes_gcm_full
+#define encrypt_from_state              armv8_enc_aes_gcm_from_state
+#define encrypt_from_constants_IPsec    armv8_enc_aes_gcm_from_constants_IPsec
+#define decrypt_full                    armv8_dec_aes_gcm_full
+#define decrypt_from_state              armv8_dec_aes_gcm_from_state
+#define decrypt_from_constants_IPsec    armv8_dec_aes_gcm_from_constants_IPsec
 
 
 // expands the input key to the keys for each AES round and generates the hash key from the AES round keys
@@ -123,11 +99,11 @@ uint8_t rijndael_sbox[256] =
     0x8C, 0xA1, 0x89, 0x0D, 0xBF, 0xE6, 0x42, 0x68, 0x41, 0x99, 0x2D, 0x0F, 0xB0, 0x54, 0xBB, 0x16
  };
 
-operation_result_t AArch64crypto_aes_gcm_set_constants(
+operation_result_t armv8_aes_gcm_set_constants(
     cipher_mode_t mode,
     uint8_t tag_byte_length,
     uint8_t * restrict key,
-    AArch64crypto_cipher_constants_t * restrict cc)
+    armv8_cipher_constants_t * restrict cc)
 {
     cc->tag_byte_length = tag_byte_length;
     cc->mode = mode;
@@ -464,7 +440,7 @@ static operation_result_t aes_gcm_expandkeys_256_kernel(uint8_t * restrict key, 
     return SUCCESSFUL_OPERATION;
 }
 
-operation_result_t AArch64crypto_aes_gcm_set_counter(uint8_t * restrict nonce, uint64_t nonce_length, cipher_state_t * restrict cs)
+operation_result_t armv8_aes_gcm_set_counter(uint8_t * restrict nonce, uint64_t nonce_length, cipher_state_t * restrict cs)
 {
     if(nonce_length == 96) { //normal case - only case for IPsec
         #if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
@@ -1974,7 +1950,7 @@ operation_result_t encrypt_full(
             result_status |= aes_gcm_expandkeys_256_kernel(key, &cc); //set expanded keys and hash key in cc
             break;
     }
-    result_status |= AArch64crypto_aes_gcm_set_counter(nonce, nonce_length, &cs); //set counter value in cs
+    result_status |= armv8_aes_gcm_set_counter(nonce, nonce_length, &cs); //set counter value in cs
     if( result_status != SUCCESSFUL_OPERATION ) return result_status; //if we have failed in setup, don't continue
 
     return encrypt_from_state(&cs, aad, aad_length, plaintext, plaintext_length, ciphertext, tag);
@@ -2055,7 +2031,7 @@ operation_result_t decrypt_full(
             result_status |= aes_gcm_expandkeys_256_kernel(key, &cc); //set expanded keys and hash key in cc
             break;
     }
-    result_status |= AArch64crypto_aes_gcm_set_counter(nonce, nonce_length, &cs); //set counter value in cs
+    result_status |= armv8_aes_gcm_set_counter(nonce, nonce_length, &cs); //set counter value in cs
     if( result_status != SUCCESSFUL_OPERATION ) return result_status; //if we have failed in setup, don't continue
 
     return decrypt_from_state(&cs, aad, aad_length, ciphertext, ciphertext_length, tag, plaintext);
@@ -2234,7 +2210,7 @@ operation_result_t encrypt_from_constants_IPsec(
 
 operation_result_t decrypt_from_constants_IPsec(
     //Inputs
-    const AArch64crypto_cipher_constants_t * cc,
+    const armv8_cipher_constants_t * cc,
     uint32_t salt,
     uint64_t ESPIV,
     const uint8_t * restrict aad, uint32_t aad_byte_length,

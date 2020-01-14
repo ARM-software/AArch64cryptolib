@@ -36,8 +36,8 @@
 #define unlikely(x)	__builtin_expect((x),0)
 
 int
-AArch64crypto_encrypt_aes128cbc_sha1(uint8_t *csrc, uint8_t *cdst, uint64_t clen,
-	uint8_t *dsrc, uint8_t *ddst, uint64_t dlen, AArch64crypto_cipher_digest_t *arg)
+armv8_enc_aes_cbc_sha1_128(uint8_t *csrc, uint8_t *cdst, uint64_t clen,
+	uint8_t *dsrc, uint8_t *ddst, uint64_t dlen, armv8_cipher_digest_t *arg)
 {
 
 	/* Digest source length has to be equal to or exceed cipher length */
@@ -55,8 +55,8 @@ AArch64crypto_encrypt_aes128cbc_sha1(uint8_t *csrc, uint8_t *cdst, uint64_t clen
 }
 
 int
-AArch64crypto_encrypt_aes128cbc_sha256(uint8_t *csrc, uint8_t *cdst, uint64_t clen,
-	uint8_t *dsrc, uint8_t *ddst, uint64_t dlen, AArch64crypto_cipher_digest_t *arg)
+armv8_enc_aes_cbc_sha256_128(uint8_t *csrc, uint8_t *cdst, uint64_t clen,
+	uint8_t *dsrc, uint8_t *ddst, uint64_t dlen, armv8_cipher_digest_t *arg)
 {
 
 	/* Digest source length has to be equal to or exceed cipher length */
@@ -74,8 +74,8 @@ AArch64crypto_encrypt_aes128cbc_sha256(uint8_t *csrc, uint8_t *cdst, uint64_t cl
 }
 
 int
-AArch64crypto_decrypt_aes128cbc_sha1(uint8_t *csrc, uint8_t *cdst, uint64_t clen,
-	uint8_t *dsrc, uint8_t *ddst, uint64_t dlen, AArch64crypto_cipher_digest_t *arg)
+armv8_dec_aes_cbc_sha1_128(uint8_t *csrc, uint8_t *cdst, uint64_t clen,
+	uint8_t *dsrc, uint8_t *ddst, uint64_t dlen, armv8_cipher_digest_t *arg)
 {
 
 	/* Digest source length has to be equal to or exceed cipher length */
@@ -100,8 +100,8 @@ AArch64crypto_decrypt_aes128cbc_sha1(uint8_t *csrc, uint8_t *cdst, uint64_t clen
 }
 
 int
-AArch64crypto_decrypt_aes128cbc_sha256(uint8_t *csrc, uint8_t *cdst, uint64_t clen,
-	uint8_t *dsrc, uint8_t *ddst, uint64_t dlen, AArch64crypto_cipher_digest_t *arg)
+armv8_dec_aes_cbc_sha256_128(uint8_t *csrc, uint8_t *cdst, uint64_t clen,
+	uint8_t *dsrc, uint8_t *ddst, uint64_t dlen, armv8_cipher_digest_t *arg)
 {
 
 	/* Digest source length has to be equal to or exceed cipher length */

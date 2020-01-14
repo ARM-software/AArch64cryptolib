@@ -8,23 +8,23 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-typedef enum cipher_mode { AES_GCM_128, AES_GCM_192, AES_GCM_256 } AArch64crypto_cipher_mode_t;
+typedef enum cipher_mode { AES_GCM_128, AES_GCM_192, AES_GCM_256 } armv8_cipher_mode_t;
 
-typedef enum operation_result { SUCCESSFUL_OPERATION = 0, AUTHENTICATION_FAILURE=1, INTERNAL_FAILURE } AArch64crypto_operation_result_t;
+typedef enum operation_result { SUCCESSFUL_OPERATION = 0, AUTHENTICATION_FAILURE=1, INTERNAL_FAILURE } armv8_operation_result_t;
 
 typedef union doubleword {
     uint8_t  b[8];
     uint16_t h[4];
     uint32_t s[2];
     uint64_t d[1];
-} AArch64crypto_doubleword_t;
+} armv8_doubleword_t;
 
 typedef union quadword {
     uint8_t  b[16];
     uint16_t h[8];
     uint32_t s[4];
     uint64_t d[2];
-} AArch64crypto_quadword_t;
+} armv8_quadword_t;
 
 #if defined(PERF_GCM_LITTLE) || defined(PERF_GCM_BIG)
     #define IPSEC_ENABLED
@@ -38,18 +38,18 @@ typedef union quadword {
 #endif
 
 typedef struct cipher_constants {
-    AArch64crypto_quadword_t expanded_aes_keys[15];
-    AArch64crypto_quadword_t expanded_hash_keys[MAX_UNROLL_FACTOR];
-    AArch64crypto_doubleword_t karat_hash_keys[MAX_UNROLL_FACTOR];
-    AArch64crypto_cipher_mode_t mode;
+    armv8_quadword_t expanded_aes_keys[15];
+    armv8_quadword_t expanded_hash_keys[MAX_UNROLL_FACTOR];
+    armv8_doubleword_t karat_hash_keys[MAX_UNROLL_FACTOR];
+    armv8_cipher_mode_t mode;
     uint8_t tag_byte_length;
-} AArch64crypto_cipher_constants_t;
+} armv8_cipher_constants_t;
 
 typedef struct cipher_state {
-    AArch64crypto_quadword_t counter;
-    AArch64crypto_quadword_t current_tag;
-    AArch64crypto_cipher_constants_t * constants;
-} AArch64crypto_cipher_state_t;
+    armv8_quadword_t counter;
+    armv8_quadword_t current_tag;
+    armv8_cipher_constants_t * constants;
+} armv8_cipher_state_t;
 
 typedef struct {
 	struct {
@@ -63,49 +63,49 @@ typedef struct {
 			uint8_t *o_key_pad;
 		} hmac;
 	} digest;
-} AArch64crypto_cipher_digest_t;
+} armv8_cipher_digest_t;
 
 /*
  * Auxiliary calls for AES-CBC/SHA
  */
-void AArch64crypto_aes_cbc_expandkeys_128_enc(uint8_t *expanded_key, const uint8_t *user_key);
-void AArch64crypto_aes_cbc_expandkeys_128_dec(uint8_t *expanded_key, const uint8_t *user_key);
-int AArch64crypto_sha1_block_partial(uint8_t *init, const uint8_t *src, uint8_t *dst,
+void armv8_expandkeys_enc_aes_cbc_128(uint8_t *expanded_key, const uint8_t *user_key);
+void armv8_expandkeys_dec_aes_cbc_128(uint8_t *expanded_key, const uint8_t *user_key);
+int armv8_sha1_block_partial(uint8_t *init, const uint8_t *src, uint8_t *dst,
 			uint64_t len);
-int AArch64crypto_sha256_block_partial(uint8_t *init, const uint8_t *src, uint8_t *dst,
+int armv8_sha256_block_partial(uint8_t *init, const uint8_t *src, uint8_t *dst,
 			uint64_t len);
 /*
  * Main interface calls for AES-CBC+SHA1/256 encryption and decryption
  */
-int AArch64crypto_encrypt_aes128cbc_sha1(
+int armv8_enc_aes_cbc_sha1_128(
 			uint8_t *csrc, uint8_t *cdst, uint64_t clen,
 			uint8_t *dsrc, uint8_t *ddst, uint64_t dlen,
-			AArch64crypto_cipher_digest_t *arg);
-int AArch64crypto_encrypt_aes128cbc_sha256(
+			armv8_cipher_digest_t *arg);
+int armv8_enc_aes_cbc_sha256_128(
 			uint8_t *csrc, uint8_t *cdst, uint64_t clen,
 			uint8_t *dsrc, uint8_t *ddst, uint64_t dlen,
-			AArch64crypto_cipher_digest_t *arg);
-int AArch64crypto_decrypt_aes128cbc_sha1(
+			armv8_cipher_digest_t *arg);
+int armv8_dec_aes_cbc_sha1_128(
 			uint8_t *csrc, uint8_t *cdst, uint64_t clen,
 			uint8_t *dsrc, uint8_t *ddst, uint64_t dlen,
-			AArch64crypto_cipher_digest_t *arg);
-int AArch64crypto_decrypt_aes128cbc_sha256(
+			armv8_cipher_digest_t *arg);
+int armv8_dec_aes_cbc_sha256_128(
 			uint8_t *csrc, uint8_t *cdst, uint64_t clen,
 			uint8_t *dsrc, uint8_t *ddst, uint64_t dlen,
-			AArch64crypto_cipher_digest_t *arg);
+			armv8_cipher_digest_t *arg);
 
 // set the cipher_constants
-AArch64crypto_operation_result_t AArch64crypto_aes_gcm_set_constants(
-    AArch64crypto_cipher_mode_t mode,
+armv8_operation_result_t armv8_aes_gcm_set_constants(
+    armv8_cipher_mode_t mode,
     uint8_t tag_byte_length,
     uint8_t * restrict key,
-    AArch64crypto_cipher_constants_t * restrict cc);
+    armv8_cipher_constants_t * restrict cc);
 
 // set the counter based on a nonce value (will invoke GHASH if nonce_length!=96)
-AArch64crypto_operation_result_t AArch64crypto_aes_gcm_set_counter(
+armv8_operation_result_t armv8_aes_gcm_set_counter(
     uint8_t * restrict nonce, uint64_t nonce_length,
         //assumed that nonce can be read in 16B blocks - will read (but not use) up to 15B beyond the end of the nonce
-    AArch64crypto_cipher_state_t * restrict cs);
+    armv8_cipher_state_t * restrict cs);
 
 // mode indicates which AEAD is being used (currently only planning to support AES-GCM variants)
 // key is secret key K as in RFC5116 - length determined by mode
@@ -115,9 +115,9 @@ AArch64crypto_operation_result_t AArch64crypto_aes_gcm_set_counter(
 // ciphertext is the resultant encrypted data with the authentication tag appended to it (should be 16B longer than plaintext)
 // expected return value is SUCCESSFUL_OPERATION
 // but will return INTERNAL_FAILURE if you hit any functions not yet implemented
-AArch64crypto_operation_result_t AArch64crypto_encrypt_full(
+armv8_operation_result_t armv8_enc_aes_gcm_full(
     //Inputs
-    AArch64crypto_cipher_mode_t mode,
+    armv8_cipher_mode_t mode,
     uint8_t * restrict key,
     uint8_t * restrict nonce, uint64_t nonce_bit_length,
         //assumed that nonce can be read in 16B blocks - will read (but not use) up to 15B beyond the end of the nonce
@@ -144,9 +144,9 @@ AArch64crypto_operation_result_t AArch64crypto_encrypt_full(
 // NOTE - encrypt_from_state will ignore and overwrite any current value in cs->current_tag
 // expected return value is SUCCESSFUL_OPERATION
 // but will return INTERNAL_FAILURE if you hit any functions not yet implemented
-AArch64crypto_operation_result_t AArch64crypto_encrypt_from_state(
+armv8_operation_result_t armv8_enc_aes_gcm_from_state(
     //Inputs
-    AArch64crypto_cipher_state_t * cs,
+    armv8_cipher_state_t * cs,
     uint8_t * restrict aad,   uint64_t aad_bit_length,
         //assumed that aad can be read in 16B blocks - will read (but not use) up to 15B beyond the end of the aad
     uint8_t * plaintext,      uint64_t plaintext_bit_length,
@@ -159,9 +159,9 @@ AArch64crypto_operation_result_t AArch64crypto_encrypt_from_state(
     );
 
 // Given a set up cipher_constants_t and the IPsec salt and ESPIV, perform encryption in place
-AArch64crypto_operation_result_t AArch64crypto_encrypt_from_constants_IPsec(
+armv8_operation_result_t armv8_enc_aes_gcm_from_constants_IPsec(
     //Inputs
-    const AArch64crypto_cipher_constants_t * cc,
+    const armv8_cipher_constants_t * cc,
     uint32_t salt,
     uint64_t ESPIV,
     const uint8_t * restrict aad,   uint32_t aad_byte_length,
@@ -184,9 +184,9 @@ AArch64crypto_operation_result_t AArch64crypto_encrypt_from_constants_IPsec(
 // plaintext is the resultant decrypted data (should be 16B shorter than ciphertext)
 // expected return value is SUCCESSFUL_OPERATION or AUTHENTICATION_FAILURE (if the provided tag does not match the computed tag)
 // but will return INTERNAL_FAILURE if you hit any functions not yet implemented
-AArch64crypto_operation_result_t AArch64crypto_decrypt_full(
+armv8_operation_result_t armv8_dec_aes_gcm_full(
     //Inputs
-    AArch64crypto_cipher_mode_t mode,
+    armv8_cipher_mode_t mode,
     uint8_t * restrict key,
     uint8_t * restrict nonce, uint64_t nonce_bit_length,
         //assumed that nonce can be read in 16B blocks - will read (but not use) up to 15B beyond the end of the nonce
@@ -214,9 +214,9 @@ AArch64crypto_operation_result_t AArch64crypto_decrypt_full(
 // NOTE - decrypt_from_state will ignore and overwrite any current value in cs->current_tag
 // expected return value is SUCCESSFUL_OPERATION or AUTHENTICATION_FAILURE (if the provided tag does not match the computed tag)
 // but will return INTERNAL_FAILURE if you hit any functions not yet implemented
-AArch64crypto_operation_result_t AArch64crypto_decrypt_from_state(
+armv8_operation_result_t armv8_dec_aes_gcm_from_state(
     //Inputs
-    AArch64crypto_cipher_state_t * cs,
+    armv8_cipher_state_t * cs,
     uint8_t * restrict aad, uint64_t aad_bit_length,
         //assumed that aad can be read in 16B blocks - will read (but not use) up to 15B beyond the end of the aad
     uint8_t * ciphertext,   uint64_t ciphertext_bit_length,
@@ -231,9 +231,9 @@ AArch64crypto_operation_result_t AArch64crypto_decrypt_from_state(
 
 // Given a set up cipher_constants_t and the IPsec salt and ESPIV, perform decryption in place
 // Compute checksum of the plaintext at the same time
-AArch64crypto_operation_result_t AArch64crypto_decrypt_from_constants_IPsec(
+armv8_operation_result_t armv8_dec_aes_gcm_from_constants_IPsec(
     //Inputs
-    const AArch64crypto_cipher_constants_t * cc,
+    const armv8_cipher_constants_t * cc,
     uint32_t salt,
     uint64_t ESPIV,
     const uint8_t * restrict aad, uint32_t aad_byte_length,

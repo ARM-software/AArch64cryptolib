@@ -38,7 +38,7 @@
  * Core SHA-2 Primitives
  *
  * Operations:
- * AArch64crypto_sha256_block_partial:
+ * armv8_sha256_block_partial:
  * 	out = partial_sha256(init, in, len)	<- no final block
  *
  * sha256_block:
@@ -46,7 +46,7 @@
  *
  * Prototype:
  *
- * int AArch64crypto_sha256_block_partial(uint8_t *init,
+ * int armv8_sha256_block_partial(uint8_t *init,
  *			uint8_t *dsrc, uint8_t *ddst, uint64_t len)
  *
  * int sha256_block(uint8_t *init,
@@ -56,7 +56,7 @@
  *
  * Registers used:
  *
- * AArch64crypto_sha256_block_partial(
+ * armv8_sha256_block_partial(
  *	init,			x0	(hash init state - NULL for default)
  *	dsrc,			x1	(digest src address)
  *	ddst,			x2	(digest dst address)
@@ -95,8 +95,8 @@
 	.text
 	.cpu generic+fp+simd+crypto+crc
 	.align	4
-	.global AArch64crypto_sha256_block_partial
-	.type	AArch64crypto_sha256_block_partial,%function
+	.global armv8_sha256_block_partial
+	.type	armv8_sha256_block_partial,%function
 	.global sha256_block
 	.type	sha256_block,%function
 
@@ -126,7 +126,7 @@
 
 	.align	4
 
-AArch64crypto_sha256_block_partial:
+armv8_sha256_block_partial:
 	mov		x6, #1			/* indicate partial hash */
 	ands		x5, x3, #0x3f		/* check size mod 1 SHA block */
 	b.ne		.Lsha256_error
@@ -522,4 +522,4 @@ sha256_block:
 	mov		x0, #-1
 	ret
 
-	.size	AArch64crypto_sha256_block_partial, .-AArch64crypto_sha256_block_partial
+	.size	armv8_sha256_block_partial, .-armv8_sha256_block_partial
