@@ -37,7 +37,8 @@ AArch64cryptolib consists of:
 Users of AArch64cryptolib have to include AArch64cryptolib.h in their source file and use the API described in that file.
 
 ## Building library
-`make` to generate file: libAArch64crypto.a
+* Native compilation with GCC basically need _make_
+* To cross compile, use CROSS flag and point it to your cross compiler. e.g. _make CROSS=aarch64-linux-gnu-_
 
 ## Compiler flags
 Select one of the code paths optimised for big or LITTLE CPU implementations:

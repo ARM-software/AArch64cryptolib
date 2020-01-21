@@ -38,7 +38,8 @@ PCDIR := ${CURDIR}/pkgconfig
 #DEFINE += -DTEST_DEBUG
 
 # build flags
-CC = gcc
+CC = $(CROSS)gcc
+AR = $(CROSS)ar
 CFLAGS += -O3
 CFLAGS += -Wall -static
 CFLAGS += -I$(SRCDIR)
@@ -124,7 +125,7 @@ $(OBJDIR):
 
 
 libAArch64crypto.a: $(OBJS)
-	ar -rcs $@ $(OBJDIR)/*.o
+	$(AR) -rcs $@ $(OBJDIR)/*.o
 
 $(PACKAGE_NAME).pc:
 	mkdir ${PCDIR}
