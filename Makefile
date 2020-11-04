@@ -33,6 +33,7 @@
 
 SRCDIR := ${CURDIR}
 OBJDIR := ${CURDIR}/obj
+PCDIR := ${CURDIR}/pkgconfig
 
 #DEFINE += -DTEST_DEBUG
 
@@ -78,12 +79,18 @@ TEST_SRCS += $(SRCDIR)/test/aescbc_test_functional.c
 TEST_SRCS += $(SRCDIR)/test/aescbc_test_speed.c
 TEST_OBJS += $(TEST_SRCS:.c=.o)
 
+# pkg-config metadata
+PACKAGE_NAME=libAArch64crypto
+PACKAGE_DESCRIPTION=AArch64 Crypto Library
+PACKAGE_URL=https://github.com/ARM-software/AArch64cryptolib
+PACKAGE_VERSION=20.01
+PKGCONFIG = ${PCDIR}/${PACKAGE_NAME}.pc
 
-all: libAArch64crypto.a $(TEST_TARGETS)
+all: libAArch64crypto.a $(TEST_TARGETS) $(PACKAGE_NAME).pc
 
 .PHONY:	clean
 clean:
-	@rm -rf $(SRCDIR)/assym.s *.a $(OBJDIR) $(TEST_TARGETS)
+	@rm -rf $(SRCDIR)/assym.s *.a $(OBJDIR) $(TEST_TARGETS) ${PCDIR}
 
 $(TEST_TARGETS): $(TEST_OBJS) libAArch64crypto.a
 	@echo "--- Linking $@"
@@ -106,3 +113,18 @@ $(OBJDIR):
 
 libAArch64crypto.a: $(OBJS)
 	ar -rcs $@ $(OBJDIR)/*.o
+
+$(PACKAGE_NAME).pc:
+	mkdir ${PCDIR}
+	@echo '--- Creating pkg-config file'
+	@echo 'prefix='$(shell pwd) >> ${PKGCONFIG}
+	@echo 'exec_prefix=$${prefix}' >> ${PKGCONFIG}
+	@echo 'libdir=$${prefix}' >> ${PKGCONFIG}
+	@echo 'includedir=$${prefix}' >> ${PKGCONFIG}
+	@echo '' >> ${PKGCONFIG}
+	@echo 'Name: '$(PACKAGE_NAME) >> ${PKGCONFIG}
+	@echo 'Description: '$(PACKAGE_DESCRIPTION) >> ${PKGCONFIG}
+	@echo 'URL: '$(PACKAGE_URL) >> ${PKGCONFIG}
+	@echo 'Version: '$(PACKAGE_VERSION) >> ${PKGCONFIG}
+	@echo 'Libs: -L$${libdir} -lAArch64crypto' >> ${PKGCONFIG}
+	@echo 'Cflags: -I$${includedir}' >> ${PKGCONFIG}
