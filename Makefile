@@ -49,9 +49,11 @@ CFLAGS += $(EXTRA_CFLAGS)
 
 # Customizable optimization flags
 ifneq (,$(filter $(OPT),little LITTLE))
-CFLAGS += -DPERF_GCM_LITTLE -mtune=cortex-a53
+API_FLAGS = -DPERF_GCM_LITTLE
+CFLAGS += $(API_FLAGS) -mtune=cortex-a53
 else ifeq ($(OPT),big)
-CFLAGS += -DPERF_GCM_BIG -mtune=cortex-a57
+API_FLAGS = -DPERF_GCM_BIG
+CFLAGS += $(API_FLAGS) -mtune=cortex-a57
 else
 endif
 
@@ -127,4 +129,4 @@ $(PACKAGE_NAME).pc:
 	@echo 'URL: '$(PACKAGE_URL) >> ${PKGCONFIG}
 	@echo 'Version: '$(PACKAGE_VERSION) >> ${PKGCONFIG}
 	@echo 'Libs: -L$${libdir} -lAArch64crypto' >> ${PKGCONFIG}
-	@echo 'Cflags: -I$${includedir}' >> ${PKGCONFIG}
+	@echo 'Cflags: -I$${includedir} ' $(API_FLAGS) >> ${PKGCONFIG}
