@@ -33,7 +33,10 @@
 
 SRCDIR := ${CURDIR}
 OBJDIR := ${CURDIR}/obj
-PCDIR := ${CURDIR}/pkgconfig
+PREFIX ?= /usr/local
+INCLUDEDIR ?= include
+LIBDIR ?= lib
+PCDIR := pkgconfig
 
 CC ?= gcc
 AR ?= ar
@@ -130,3 +133,8 @@ $(PACKAGE_NAME).pc:
 	@echo 'Version: '$(PACKAGE_VERSION) >> ${PKGCONFIG}
 	@echo 'Libs: -L$${libdir} -lAArch64crypto' >> ${PKGCONFIG}
 	@echo 'Cflags: -I$${includedir}' >> ${PKGCONFIG}
+
+install: AArch64cryptolib.h libAArch64crypto.a $(PKGCONFIG)
+	install -m 0644 -Dt $(PREFIX)/$(INCLUDEDIR) AArch64cryptolib.h
+	install -m 0644 -Dt $(PREFIX)/$(LIBDIR) libAArch64crypto.a
+	install -m 0644 -Dt $(PREFIX)/$(LIBDIR)/$(PCDIR) $(PKGCONFIG)
