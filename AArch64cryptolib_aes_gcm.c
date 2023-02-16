@@ -2016,7 +2016,7 @@ operation_result_t decrypt_full(
     uint8_t * plaintext)                               //Outputs
 {
     operation_result_t result_status = SUCCESSFUL_OPERATION;
-    cipher_constants_t cc = { .mode = mode };
+    cipher_constants_t cc = { .mode = mode, .tag_byte_length = 16 };
     cipher_state_t cs = { .counter = { .d = {0,0} } };
     cs.constants = &cc;
 
