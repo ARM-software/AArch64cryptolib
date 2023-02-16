@@ -2044,6 +2044,12 @@ operation_result_t decrypt_from_state(
     uint8_t * restrict tag,
     uint8_t * plaintext)
 {
+    //Check for invalid tag sizes
+    if ((cs->constants->tag_byte_length < 12 || cs->constants->tag_byte_length > 16) &&
+	(cs->constants->tag_byte_length != 4 && cs->constants->tag_byte_length != 8))
+    {
+	return AUTHENTICATION_FAILURE;
+    }
     operation_result_t result_status = SUCCESSFUL_OPERATION;
     quadword_t final_aes_ctr_block = { .d = {0,0} };
     quadword_t final_block; // [len(A)]_64 | [len(C)]_64
