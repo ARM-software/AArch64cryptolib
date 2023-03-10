@@ -1,0 +1,11 @@
+prefix=@PREFIX@
+exec_prefix=${prefix}
+libdir=${prefix}/@LIBDIR@
+includedir=${prefix}/@INCLUDEDIR@
+
+Name: @NAME@
+Description: AArch64 Crypto Library
+URL: https://github.com/ARM-software/AArch64cryptolib
+Version: 20.11
+Libs: -L${libdir} -lAArch64crypto
+Cflags: -I${includedir}

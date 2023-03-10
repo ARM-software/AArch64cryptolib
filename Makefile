@@ -33,12 +33,17 @@
 
 SRCDIR := ${CURDIR}
 OBJDIR := ${CURDIR}/obj
-PCDIR := ${CURDIR}/pkgconfig
+PREFIX ?= /usr/local
+INCLUDEDIR ?= include
+LIBDIR ?= lib
+PCDIR := pkgconfig
+
+CC ?= gcc
+AR ?= ar
 
 #DEFINE += -DTEST_DEBUG
 
 # build flags
-CC = gcc
 CFLAGS += -O3
 CFLAGS += -Wall -static
 CFLAGS += -I$(SRCDIR)
@@ -81,9 +86,6 @@ TEST_OBJS += $(TEST_SRCS:.c=.o)
 
 # pkg-config metadata
 PACKAGE_NAME=libAArch64crypto
-PACKAGE_DESCRIPTION=AArch64 Crypto Library
-PACKAGE_URL=https://github.com/ARM-software/AArch64cryptolib
-PACKAGE_VERSION=20.01
 PKGCONFIG = ${PCDIR}/${PACKAGE_NAME}.pc
 
 all: libAArch64crypto.a $(TEST_TARGETS) $(PACKAGE_NAME).pc
@@ -112,19 +114,18 @@ $(OBJDIR):
 
 
 libAArch64crypto.a: $(OBJS)
-	ar -rcs $@ $(OBJDIR)/*.o
+	$(AR) -rcs $@ $(OBJDIR)/*.o
 
-$(PACKAGE_NAME).pc:
-	mkdir ${PCDIR}
-	@echo '--- Creating pkg-config file'
-	@echo 'prefix='$(shell pwd) >> ${PKGCONFIG}
-	@echo 'exec_prefix=$${prefix}' >> ${PKGCONFIG}
-	@echo 'libdir=$${prefix}' >> ${PKGCONFIG}
-	@echo 'includedir=$${prefix}' >> ${PKGCONFIG}
-	@echo '' >> ${PKGCONFIG}
-	@echo 'Name: '$(PACKAGE_NAME) >> ${PKGCONFIG}
-	@echo 'Description: '$(PACKAGE_DESCRIPTION) >> ${PKGCONFIG}
-	@echo 'URL: '$(PACKAGE_URL) >> ${PKGCONFIG}
-	@echo 'Version: '$(PACKAGE_VERSION) >> ${PKGCONFIG}
-	@echo 'Libs: -L$${libdir} -lAArch64crypto' >> ${PKGCONFIG}
-	@echo 'Cflags: -I$${includedir}' >> ${PKGCONFIG}
+$(PKGCONFIG): $(PACKAGE_NAME).pc.in Makefile
+	mkdir -p $(dir $@)
+	awk <$< >$@ '{ \
+		sub("@PREFIX@", "$(PREFIX)"); \
+		sub("@INCLUDEDIR@", "$(INCLUDEDIR)"); \
+		sub("@LIBDIR@", "$(LIBDIR)"); \
+		sub("@NAME@", "$(PACKAGE_NAME)"); \
+	}1'
+
+install: AArch64cryptolib.h libAArch64crypto.a $(PKGCONFIG)
+	install -m 0644 -Dt $(PREFIX)/$(INCLUDEDIR) AArch64cryptolib.h
+	install -m 0644 -Dt $(PREFIX)/$(LIBDIR) libAArch64crypto.a
+	install -m 0644 -Dt $(PREFIX)/$(LIBDIR)/$(PCDIR) $(PKGCONFIG)
