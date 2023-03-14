@@ -51,6 +51,8 @@ inline uint8_t hextobyte(uint8_t top, uint8_t bot) {
 //// Called once a reference state is set up, runs encrypt/decrypt
 //// and checks the outputs match the expected outputs
 bool __attribute__ ((noinline)) test_reference(cipher_state_t cs,
+		    uint8_t * key,
+		    uint8_t *nonce, uint64_t nonce_bit_length,
                     uint8_t * aad, uint64_t aad_length,
                     uint8_t * reference_plaintext,
                     uint64_t plaintext_length,
@@ -241,7 +243,25 @@ bool __attribute__ ((noinline)) test_reference(cipher_state_t cs,
     if(verbose) printf("Reference ciphertext match %s!\nReference tag match %s!\nReference counter match %s!\n", ref_ciphertext_match ? "success" : "failure", reference_tag_match ? "success" : "failure", reference_counter_match ? "success" : "failure");
 
     cs.counter = temp_counter; //reset counter early so we can retest without recomputing the counter
-    if(!ref_ciphertext_match || !reference_tag_match || !reference_counter_match || (encrypt_result != SUCCESSFUL_OPERATION)) {
+
+    if(verbose) printf("\n\nENCRYPTION TEST FULL\n");
+
+    operation_result_t encrypt_result_full =
+	encrypt_full(cs.constants->mode,
+		     key,
+		     nonce, nonce_bit_length,
+		     aad, aad_length,
+		     reference_plaintext, plaintext_length,     //Inputs
+		     output,
+		     tag);
+    for(int i=0; i<(plaintext_length>>3); ++i) {
+        if( output[i] != reference_ciphertext[i] ) ref_ciphertext_match = false;
+    }
+    for(int i=0; i<(cs.constants->tag_byte_length); ++i) {
+        if( tag[i] != reference_tag[i] ) reference_tag_match = false;
+    }
+
+    if(!ref_ciphertext_match || !reference_tag_match || !reference_counter_match || encrypt_result != SUCCESSFUL_OPERATION || encrypt_result_full != SUCCESSFUL_OPERATION) {
         if(verbose) printf("Encryption failure!\n");
         success = false;
     }
@@ -260,7 +280,6 @@ bool __attribute__ ((noinline)) test_reference(cipher_state_t cs,
             reference_ciphertext, plaintext_length,
             reference_tag,
             output); //Outputs
-
     if(verbose)
     {
         if(output != NULL) {
@@ -293,10 +312,25 @@ bool __attribute__ ((noinline)) test_reference(cipher_state_t cs,
     }
     if(verbose) printf("Reference plaintext match %s!\nReference tag match %s!\nReference counter match %s!\n", ref_plaintext_match ? "success" : "failure", reference_tag_match ? "success" : "failure", reference_counter_match ? "success" : "failure");
 
+    if(verbose) printf("\n\nDECRYPTION TEST FULL\n");
+
+    operation_result_t decrypt_result_full =
+	decrypt_full(cs.constants->mode,
+		     key,
+		     nonce, nonce_bit_length,
+		     aad, aad_length,
+		     reference_ciphertext, plaintext_length,
+		     reference_tag, cs.constants->tag_byte_length,
+		     output);
+    //Check output plaintext from decrypt_full()
+    for(int i=0; i<(plaintext_length>>3); ++i) {
+        if( output[i] != reference_plaintext[i] ) ref_plaintext_match = false;
+    }
+
     free(output);
     free(tag);
     cs.counter = temp_counter;
-    if(!ref_plaintext_match || !reference_tag_match || !reference_counter_match || (decrypt_result != SUCCESSFUL_OPERATION)) {
+    if(!ref_plaintext_match || !reference_tag_match || !reference_counter_match || decrypt_result != SUCCESSFUL_OPERATION || decrypt_result_full != SUCCESSFUL_OPERATION) {
         if(verbose) printf("Decryption failure!\n");
         success = false;
     }
@@ -311,6 +345,8 @@ bool __attribute__ ((noinline)) test_reference(cipher_state_t cs,
 //// Called once a reference state is set up and we expect it to fail authentication runs decryption
 //// and checks the result is an authentication failure
 bool test_reference_invalid_auth(cipher_state_t cs,
+		    uint8_t * key,
+		    uint8_t * nonce, uint64_t nonce_bit_length,
                     uint8_t * aad, uint64_t aad_length,
                     uint8_t * reference_plaintext,
                     uint64_t plaintext_length,
@@ -428,10 +464,19 @@ bool test_reference_invalid_auth(cipher_state_t cs,
     }
     if(verbose) printf("Reference plaintext match %s!\nReference tag match %s!\n", ref_plaintext_match ? "success" : "failure", reference_tag_match ? "success" : "failure");
 
+    //Now try the full version of decrypt
+    operation_result_t decrypt_result_full =
+	decrypt_full(cs.constants->mode,
+		     key,
+		     nonce, nonce_bit_length,
+		     aad, aad_length,
+		     reference_ciphertext, plaintext_length,
+		     reference_tag, cs.constants->tag_byte_length,
+		     output);
     free(output);
     free(tag);
     cs.counter = temp_counter;
-    if(decrypt_result != AUTHENTICATION_FAILURE) {
+    if(decrypt_result != AUTHENTICATION_FAILURE || decrypt_result_full != AUTHENTICATION_FAILURE) {
         if(verbose) printf("Decryption didn't cause authentication failure!\n");
         success = false;
     }
@@ -472,6 +517,7 @@ void process_test_file(FILE * fin)
 
     char * input_buff = (char *)malloc(MAX_LINE_LEN);
     fpos_t last_line;
+    uint8_t temp_key[32];
     uint8_t key_length = 16;
 
     bool acceptable = true;
@@ -491,7 +537,8 @@ void process_test_file(FILE * fin)
                         {
                             bool pass;
                             if(expect_valid_auth) {
-                                pass = test_reference( cs,
+                                pass = test_reference( cs, temp_key,
+					    nonce, nonce_length,
                                             aad, aad_length,
                                             reference_plaintext,
                                             plaintext_length,
@@ -501,7 +548,8 @@ void process_test_file(FILE * fin)
                                             *((uint64_t *) reference_checksum), checksum_set,
                                             false);
                             } else {
-                                pass = test_reference_invalid_auth( cs,
+                                pass = test_reference_invalid_auth( cs, temp_key,
+					    nonce, nonce_length,
                                             aad, aad_length,
                                             reference_plaintext,
                                             plaintext_length,
@@ -577,7 +625,8 @@ void process_test_file(FILE * fin)
                                 printf("\n");
 
                                 if(expect_valid_auth) {
-                                    pass = test_reference( cs,
+                                    pass = test_reference( cs, temp_key,
+					        nonce, nonce_length,
                                                 aad, aad_length,
                                                 reference_plaintext,
                                                 plaintext_length,
@@ -587,7 +636,8 @@ void process_test_file(FILE * fin)
                                                 *((uint64_t *) reference_checksum), checksum_set,
                                                 true);
                                 } else {
-                                    pass = test_reference_invalid_auth( cs,
+                                    pass = test_reference_invalid_auth( cs, temp_key,
+						nonce, nonce_length,
                                                 aad, aad_length,
                                                 reference_plaintext,
                                                 plaintext_length,
@@ -672,7 +722,6 @@ void process_test_file(FILE * fin)
                 else if(strncmp(input_buff, "Key", 3) == 0) {
                     //set the AES key and associated precomputation
                     //needs the cipher mode to be set already
-                    uint8_t temp_key[32];
                     fsetpos(fin, &last_line);
                     fseek(fin, 6, SEEK_CUR);
                     for(uint64_t i=0; i<key_length; ++i) {
