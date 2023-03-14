@@ -1949,6 +1949,8 @@ operation_result_t encrypt_full(
         case AES_GCM_256:
             result_status |= aes_gcm_expandkeys_256_kernel(key, &cc); //set expanded keys and hash key in cc
             break;
+	default :
+	    return INVALID_PARAMETER;
     }
     result_status |= armv8_aes_gcm_set_counter(nonce, nonce_length, &cs); //set counter value in cs
     if( result_status != SUCCESSFUL_OPERATION ) return result_status; //if we have failed in setup, don't continue
@@ -1999,6 +2001,8 @@ operation_result_t encrypt_from_state(
 
             result_status |= aes_gcm_enc_256_kernel(plaintext, plaintext_length, cs, ciphertext); //set ciphertext to encrypted plaintext whilst updating current_tag value in cs
             break;
+	default :
+	    return INVALID_PARAMETER;
     }
     result_status |= ghash_kernel(final_block.b, 128, cs); //update current_tag value in cs with final_block
     result_status |= aes_gcm_finalize(cs, final_aes_ctr_block, tag); //finalize current_tag
@@ -2012,11 +2016,17 @@ operation_result_t decrypt_full(
     uint8_t * nonce,       uint64_t nonce_length,
     uint8_t * aad,         uint64_t aad_length,
     uint8_t * ciphertext,  uint64_t ciphertext_length,
-    uint8_t * tag,                                     //Inputs
+    uint8_t * tag,         uint64_t tag_byte_length,   //Inputs
     uint8_t * plaintext)                               //Outputs
 {
+    //Check for invalid tag sizes
+    if ((tag_byte_length < 12 || tag_byte_length > 16) &&
+	(tag_byte_length != 4 && tag_byte_length != 8))
+    {
+	return INVALID_PARAMETER;
+    }
     operation_result_t result_status = SUCCESSFUL_OPERATION;
-    cipher_constants_t cc = { .mode = mode, .tag_byte_length = 16 };
+    cipher_constants_t cc = { .mode = mode, .tag_byte_length = tag_byte_length };
     cipher_state_t cs = { .counter = { .d = {0,0} } };
     cs.constants = &cc;
 
@@ -2030,6 +2040,8 @@ operation_result_t decrypt_full(
         case AES_GCM_256:
             result_status |= aes_gcm_expandkeys_256_kernel(key, &cc); //set expanded keys and hash key in cc
             break;
+	default :
+	    return INVALID_PARAMETER;
     }
     result_status |= armv8_aes_gcm_set_counter(nonce, nonce_length, &cs); //set counter value in cs
     if( result_status != SUCCESSFUL_OPERATION ) return result_status; //if we have failed in setup, don't continue
@@ -2048,7 +2060,7 @@ operation_result_t decrypt_from_state(
     if ((cs->constants->tag_byte_length < 12 || cs->constants->tag_byte_length > 16) &&
 	(cs->constants->tag_byte_length != 4 && cs->constants->tag_byte_length != 8))
     {
-	return AUTHENTICATION_FAILURE;
+	return INVALID_PARAMETER;
     }
     operation_result_t result_status = SUCCESSFUL_OPERATION;
     quadword_t final_aes_ctr_block = { .d = {0,0} };
@@ -2086,6 +2098,8 @@ operation_result_t decrypt_from_state(
 
             result_status |= aes_gcm_dec_256_kernel(ciphertext, ciphertext_length, cs, plaintext); //set plaintext to decrypted ciphertext whilst updating current_tag value in cs
             break;
+	default :
+	    return INVALID_PARAMETER;
     }
     result_status |= ghash_kernel(final_block.b, 128, cs); //update current_tag value in cs with final_block
     result_status |= aes_gcm_finalize(cs, final_aes_ctr_block, cs->current_tag.b); //finalize current_tag

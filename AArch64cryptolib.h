@@ -10,7 +10,7 @@
 
 typedef enum cipher_mode { AES_GCM_128, AES_GCM_192, AES_GCM_256 } armv8_cipher_mode_t;
 
-typedef enum operation_result { SUCCESSFUL_OPERATION = 0, AUTHENTICATION_FAILURE=1, INTERNAL_FAILURE } armv8_operation_result_t;
+typedef enum operation_result { SUCCESSFUL_OPERATION = 0, AUTHENTICATION_FAILURE=1, INTERNAL_FAILURE, INVALID_PARAMETER } armv8_operation_result_t;
 
 typedef union doubleword {
     uint8_t  b[8];
@@ -194,8 +194,7 @@ armv8_operation_result_t armv8_dec_aes_gcm_full(
         //assumed that aad can be read in 16B blocks - will read (but not use) up to 15B beyond the end of the aad
     uint8_t * ciphertext,     uint64_t ciphertext_bit_length,
         //assumed that ciphertext can be read in 16B blocks - will read (but not use) up to 15B beyond the end of the ciphertext
-    uint8_t * tag,
-        //tag_byte_length specified in cipher_constants
+    uint8_t * tag, uint64_t tag_byte_length,
         //assumed that bytes up to tag+15 are accessible, though only the number specified in cipher_constants are used
     //Output
     uint8_t * plaintext
