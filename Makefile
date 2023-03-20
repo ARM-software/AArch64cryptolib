@@ -97,7 +97,7 @@ TEST_OBJS += $(TEST_SRCS:.c=.o)
 PACKAGE_NAME=libAArch64crypto
 PACKAGE_DESCRIPTION=AArch64 Crypto Library
 PACKAGE_URL=https://github.com/ARM-software/AArch64cryptolib
-PACKAGE_VERSION=20.01
+PACKAGE_VERSION=23.03
 PKGCONFIG = ${PCDIR}/${PACKAGE_NAME}.pc
 
 all: libAArch64crypto.a $(TEST_TARGETS) $(PACKAGE_NAME).pc
