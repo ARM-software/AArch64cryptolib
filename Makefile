@@ -42,17 +42,29 @@ CC = gcc
 CFLAGS += -O3
 CFLAGS += -Wall -static
 CFLAGS += -I$(SRCDIR)
-CFLAGS += -march=armv8-a+simd+crypto
+CFLAGS += -march=$(ARCH)
+ARCH = armv8-a+simd+crypto
 CFLAGS += -flax-vector-conversions
 CFLAGS += $(DEFINE)
 CFLAGS += $(EXTRA_CFLAGS)
 
 # Customizable optimization flags
 ifneq (,$(filter $(OPT),little LITTLE))
-CFLAGS += -DPERF_GCM_LITTLE -mtune=cortex-a53
+$(warning Using LITTLE AES-GCM implementation)
+CFLAGS += -DPERF_GCM_LITTLE
 else ifeq ($(OPT),big)
-CFLAGS += -DPERF_GCM_BIG -mtune=cortex-a57
+$(warning Using BIG AES-GCM implementation)
+CFLAGS += -DPERF_GCM_BIG
+else ifeq ($(OPT),bigger)
+$(warning Using BIGGER AES-GCM implementation)
+CFLAGS += -DPERF_GCM_BIGGER
+else ifeq ($(OPT),biggereor3)
+$(warning Using BIGGEREOR3 AES-GCM implementation)
+CFLAGS += -DPERF_GCM_BIGGEREOR3
+#Need sha3 feature for eor3 instruction, this is only available together with v8.2a
+ARCH = armv8.2-a+simd+crypto+sha3
 else
+$(error AES-GCM implementation not specified)
 endif
 
 # library AES-CBC c files

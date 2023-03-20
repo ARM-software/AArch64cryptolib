@@ -816,19 +816,15 @@ static operation_result_t aes_ctr_blk_256_kernel(uint64_t block_count, cipher_st
     return SUCCESSFUL_OPERATION;
 }
 
-#ifdef PERF_GCM_LITTLE
+#if defined PERF_GCM_LITTLE
     #include "AArch64cryptolib_opt_LITTLE/aes_gcm/enc/aes_gcm_enc_128_kernel__interleaved.c"
+#elif defined PERF_GCM_BIG
+    #include "AArch64cryptolib_opt_big/aes_gcm/enc/aes_gcm_enc_128_kernel__interleaved.c"
+#elif defined PERF_GCM_BIGGER
+    #include "AArch64cryptolib_opt_bigger/aes_gcm/enc/aes_gcm_enc_128_kernel__interleaved.c"
+#elif defined PERF_GCM_BIGGEREOR3
+    #include "AArch64cryptolib_opt_bigger/aes_gcm/enc/aes_gcm_enc_128_kernel_EOR3__interleaved.c"
 #else
-    #ifdef PERF_GCM_BIG
-        #include "AArch64cryptolib_opt_big/aes_gcm/enc/aes_gcm_enc_128_kernel__interleaved.c"
-    #else
-        #ifdef PERF_GCM_BIGGER
-            #ifdef PERF_GCM_BIGGEREOR3
-                #include "AArch64cryptolib_opt_bigger/aes_gcm/enc/aes_gcm_enc_128_kernel_EOR3__interleaved.c"
-            #else
-                #include "AArch64cryptolib_opt_bigger/aes_gcm/enc/aes_gcm_enc_128_kernel__interleaved.c"
-            #endif
-        #else
 static operation_result_t aes_gcm_enc_128_kernel(uint8_t * plaintext, uint64_t plaintext_length, cipher_state_t * restrict cs, uint8_t * ciphertext)
 {
     if(plaintext_length == 0) {
@@ -988,23 +984,17 @@ static operation_result_t aes_gcm_enc_128_kernel(uint8_t * plaintext, uint64_t p
 
     return SUCCESSFUL_OPERATION;
 }
-        #endif
-    #endif
 #endif
 
-#ifdef PERF_GCM_LITTLE
+#if defined PERF_GCM_LITTLE
     #include "AArch64cryptolib_opt_LITTLE/aes_gcm/enc/aes_gcm_enc_192_kernel__interleaved.c"
+#elif defined PERF_GCM_BIG
+    #include "AArch64cryptolib_opt_big/aes_gcm/enc/aes_gcm_enc_192_kernel__interleaved.c"
+#elif defined PERF_GCM_BIGGER
+    #include "AArch64cryptolib_opt_bigger/aes_gcm/enc/aes_gcm_enc_192_kernel__interleaved.c"
+#elif defined PERF_GCM_BIGGEREOR3
+    #include "AArch64cryptolib_opt_bigger/aes_gcm/enc/aes_gcm_enc_192_kernel_EOR3__interleaved.c"
 #else
-    #ifdef PERF_GCM_BIG
-        #include "AArch64cryptolib_opt_big/aes_gcm/enc/aes_gcm_enc_192_kernel__interleaved.c"
-    #else
-        #ifdef PERF_GCM_BIGGER
-            #ifdef PERF_GCM_BIGGEREOR3
-                #include "AArch64cryptolib_opt_bigger/aes_gcm/enc/aes_gcm_enc_192_kernel_EOR3__interleaved.c"
-            #else
-                #include "AArch64cryptolib_opt_bigger/aes_gcm/enc/aes_gcm_enc_192_kernel__interleaved.c"
-            #endif
-        #else
 static operation_result_t aes_gcm_enc_192_kernel(uint8_t * plaintext, uint64_t plaintext_length, cipher_state_t * restrict cs, uint8_t * ciphertext)
 {
     if(plaintext_length == 0) {
@@ -1170,23 +1160,17 @@ static operation_result_t aes_gcm_enc_192_kernel(uint8_t * plaintext, uint64_t p
 
     return SUCCESSFUL_OPERATION;
 }
-        #endif
-    #endif
 #endif
 
-#ifdef PERF_GCM_LITTLE
+#if defined PERF_GCM_LITTLE
     #include "AArch64cryptolib_opt_LITTLE/aes_gcm/enc/aes_gcm_enc_256_kernel__interleaved.c"
+#elif defined PERF_GCM_BIG
+    #include "AArch64cryptolib_opt_big/aes_gcm/enc/aes_gcm_enc_256_kernel__interleaved.c"
+#elif defined PERF_GCM_BIGGER
+    #include "AArch64cryptolib_opt_bigger/aes_gcm/enc/aes_gcm_enc_256_kernel__interleaved.c"
+#elif defined PERF_GCM_BIGGEREOR3
+    #include "AArch64cryptolib_opt_bigger/aes_gcm/enc/aes_gcm_enc_256_kernel_EOR3__interleaved.c"
 #else
-    #ifdef PERF_GCM_BIG
-        #include "AArch64cryptolib_opt_big/aes_gcm/enc/aes_gcm_enc_256_kernel__interleaved.c"
-    #else
-        #ifdef PERF_GCM_BIGGER
-            #ifdef PERF_GCM_BIGGEREOR3
-                #include "AArch64cryptolib_opt_bigger/aes_gcm/enc/aes_gcm_enc_256_kernel_EOR3__interleaved.c"
-            #else
-                #include "AArch64cryptolib_opt_bigger/aes_gcm/enc/aes_gcm_enc_256_kernel__interleaved.c"
-            #endif
-        #else
 static operation_result_t aes_gcm_enc_256_kernel(uint8_t * plaintext, uint64_t plaintext_length, cipher_state_t * restrict cs, uint8_t * ciphertext)
 {
     if(plaintext_length == 0) {
@@ -1358,23 +1342,17 @@ static operation_result_t aes_gcm_enc_256_kernel(uint8_t * plaintext, uint64_t p
 
     return SUCCESSFUL_OPERATION;
 }
-        #endif
-    #endif
 #endif
 
-#ifdef PERF_GCM_LITTLE
+#if defined PERF_GCM_LITTLE
     #include "AArch64cryptolib_opt_LITTLE/aes_gcm/dec/aes_gcm_dec_128_kernel__interleaved.c"
+#elif defined PERF_GCM_BIG
+    #include "AArch64cryptolib_opt_big/aes_gcm/dec/aes_gcm_dec_128_kernel__interleaved.c"
+#elif defined PERF_GCM_BIGGER
+    #include "AArch64cryptolib_opt_bigger/aes_gcm/dec/aes_gcm_dec_128_kernel__interleaved.c"
+#elif defined PERF_GCM_BIGGEREOR3
+    #include "AArch64cryptolib_opt_bigger/aes_gcm/dec/aes_gcm_dec_128_kernel_EOR3__interleaved.c"
 #else
-    #ifdef PERF_GCM_BIG
-        #include "AArch64cryptolib_opt_big/aes_gcm/dec/aes_gcm_dec_128_kernel__interleaved.c"
-    #else
-        #ifdef PERF_GCM_BIGGER
-            #ifdef PERF_GCM_BIGGEREOR3
-                #include "AArch64cryptolib_opt_bigger/aes_gcm/dec/aes_gcm_dec_128_kernel_EOR3__interleaved.c"
-            #else
-                #include "AArch64cryptolib_opt_bigger/aes_gcm/dec/aes_gcm_dec_128_kernel__interleaved.c"
-            #endif
-        #else
 static operation_result_t aes_gcm_dec_128_kernel(uint8_t * ciphertext, uint64_t ciphertext_length, cipher_state_t * restrict cs, uint8_t * plaintext)
 {
     if(ciphertext_length == 0) {
@@ -1536,23 +1514,17 @@ static operation_result_t aes_gcm_dec_128_kernel(uint8_t * ciphertext, uint64_t 
 
     return SUCCESSFUL_OPERATION;
 }
-        #endif
-    #endif
 #endif
 
-#ifdef PERF_GCM_LITTLE
+#if defined PERF_GCM_LITTLE
     #include "AArch64cryptolib_opt_LITTLE/aes_gcm/dec/aes_gcm_dec_192_kernel__interleaved.c"
+#elif defined PERF_GCM_BIG
+    #include "AArch64cryptolib_opt_big/aes_gcm/dec/aes_gcm_dec_192_kernel__interleaved.c"
+#elif defined PERF_GCM_BIGGER
+    #include "AArch64cryptolib_opt_bigger/aes_gcm/dec/aes_gcm_dec_192_kernel__interleaved.c"
+#elif defined PERF_GCM_BIGGEREOR3
+    #include "AArch64cryptolib_opt_bigger/aes_gcm/dec/aes_gcm_dec_192_kernel_EOR3__interleaved.c"
 #else
-    #ifdef PERF_GCM_BIG
-        #include "AArch64cryptolib_opt_big/aes_gcm/dec/aes_gcm_dec_192_kernel__interleaved.c"
-    #else
-        #ifdef PERF_GCM_BIGGER
-            #ifdef PERF_GCM_BIGGEREOR3
-                #include "AArch64cryptolib_opt_bigger/aes_gcm/dec/aes_gcm_dec_192_kernel_EOR3__interleaved.c"
-            #else
-                #include "AArch64cryptolib_opt_bigger/aes_gcm/dec/aes_gcm_dec_192_kernel__interleaved.c"
-            #endif
-        #else
 static operation_result_t aes_gcm_dec_192_kernel(uint8_t * ciphertext, uint64_t ciphertext_length, cipher_state_t * restrict cs, uint8_t * plaintext)
 {
     if(ciphertext_length == 0) {
@@ -1720,23 +1692,17 @@ static operation_result_t aes_gcm_dec_192_kernel(uint8_t * ciphertext, uint64_t 
 
     return SUCCESSFUL_OPERATION;
 }
-        #endif
-    #endif
 #endif
 
-#ifdef PERF_GCM_LITTLE
+#if defined PERF_GCM_LITTLE
     #include "AArch64cryptolib_opt_LITTLE/aes_gcm/dec/aes_gcm_dec_256_kernel__interleaved.c"
+#elif defined PERF_GCM_BIG
+    #include "AArch64cryptolib_opt_big/aes_gcm/dec/aes_gcm_dec_256_kernel__interleaved.c"
+#elif defined PERF_GCM_BIGGER
+    #include "AArch64cryptolib_opt_bigger/aes_gcm/dec/aes_gcm_dec_256_kernel__interleaved.c"
+#elif defined PERF_GCM_BIGGEREOR3
+    #include "AArch64cryptolib_opt_bigger/aes_gcm/dec/aes_gcm_dec_256_kernel_EOR3__interleaved.c"
 #else
-    #ifdef PERF_GCM_BIG
-        #include "AArch64cryptolib_opt_big/aes_gcm/dec/aes_gcm_dec_256_kernel__interleaved.c"
-    #else
-        #ifdef PERF_GCM_BIGGER
-            #ifdef PERF_GCM_BIGGEREOR3
-                #include "AArch64cryptolib_opt_bigger/aes_gcm/dec/aes_gcm_dec_256_kernel_EOR3__interleaved.c"
-            #else
-                #include "AArch64cryptolib_opt_bigger/aes_gcm/dec/aes_gcm_dec_256_kernel__interleaved.c"
-            #endif
-        #else
 static operation_result_t aes_gcm_dec_256_kernel(uint8_t * ciphertext, uint64_t ciphertext_length, cipher_state_t * restrict cs, uint8_t * plaintext)
 {
     if(ciphertext_length == 0) {
@@ -1910,8 +1876,6 @@ static operation_result_t aes_gcm_dec_256_kernel(uint8_t * ciphertext, uint64_t 
 
     return SUCCESSFUL_OPERATION;
 }
-        #endif
-    #endif
 #endif
 
 static operation_result_t aes_gcm_finalize(cipher_state_t * restrict cs, quadword_t final_block, uint8_t * restrict output_tag)
