@@ -52,21 +52,22 @@ CFLAGS += $(EXTRA_CFLAGS)
 # Customizable optimization flags
 ifneq (,$(filter $(OPT),little LITTLE))
 $(warning Using LITTLE AES-GCM implementation)
-CFLAGS += -DPERF_GCM_LITTLE
+BUILDOPT += -DPERF_GCM_LITTLE
 else ifeq ($(OPT),big)
 $(warning Using BIG AES-GCM implementation)
-CFLAGS += -DPERF_GCM_BIG
+BUILDOPT += -DPERF_GCM_BIG
 else ifeq ($(OPT),bigger)
 $(warning Using BIGGER AES-GCM implementation)
-CFLAGS += -DPERF_GCM_BIGGER
+BUILDOPT += -DPERF_GCM_BIGGER
 else ifeq ($(OPT),biggereor3)
 $(warning Using BIGGEREOR3 AES-GCM implementation)
-CFLAGS += -DPERF_GCM_BIGGEREOR3
+BUILDOPT += -DPERF_GCM_BIGGEREOR3
 #Need sha3 feature for eor3 instruction, this is only available together with v8.2a
 ARCH = armv8.2-a+simd+crypto+sha3
 else
 $(error AES-GCM implementation not specified)
 endif
+DEFINE += $(BUILDOPT)
 
 # library AES-CBC c files
 SRCS += $(SRCDIR)/AArch64cryptolib_aes_cbc.c
@@ -140,4 +141,4 @@ $(PACKAGE_NAME).pc:
 	@echo 'URL: '$(PACKAGE_URL) >> ${PKGCONFIG}
 	@echo 'Version: '$(PACKAGE_VERSION) >> ${PKGCONFIG}
 	@echo 'Libs: -L$${libdir} -lAArch64crypto' >> ${PKGCONFIG}
-	@echo 'Cflags: -I$${includedir}' >> ${PKGCONFIG}
+	@echo 'Cflags: $(BUILDOPT) -I$${includedir}' >> ${PKGCONFIG}
