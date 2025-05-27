@@ -918,7 +918,7 @@ static operation_result_t aes_gcm_enc_128_kernel(uint8_t * plaintext, uint64_t p
             enc_mask = vsetq_lane_u64(0xFFFFFFFFFFFFFFFFul, enc_mask, 0);
             enc_mask = vsetq_lane_u64(0xFFFFFFFFFFFFFFFFul >> zero_bits, enc_mask, 1);
         } else {
-            enc_mask = vsetq_lane_u64(0xFFFFFFFFFFFFFFFFul >> (zero_bits-64), enc_mask, 0);
+            enc_mask = vsetq_lane_u64(0xFFFFFFFFFFFFFFFFul >> (zero_bits&63), enc_mask, 0);
             enc_mask = vsetq_lane_u64(0, enc_mask, 1);
         }
 
@@ -1092,7 +1092,7 @@ static operation_result_t aes_gcm_enc_192_kernel(uint8_t * plaintext, uint64_t p
             enc_mask = vsetq_lane_u64(0xFFFFFFFFFFFFFFFFul, enc_mask, 0);
             enc_mask = vsetq_lane_u64(0xFFFFFFFFFFFFFFFFul >> zero_bits, enc_mask, 1);
         } else {
-            enc_mask = vsetq_lane_u64(0xFFFFFFFFFFFFFFFFul >> (zero_bits-64), enc_mask, 0);
+            enc_mask = vsetq_lane_u64(0xFFFFFFFFFFFFFFFFul >> (zero_bits&63), enc_mask, 0);
             enc_mask = vsetq_lane_u64(0, enc_mask, 1);
         }
 
@@ -1272,7 +1272,7 @@ static operation_result_t aes_gcm_enc_256_kernel(uint8_t * plaintext, uint64_t p
             enc_mask = vsetq_lane_u64(0xFFFFFFFFFFFFFFFFul, enc_mask, 0);
             enc_mask = vsetq_lane_u64(0xFFFFFFFFFFFFFFFFul >> zero_bits, enc_mask, 1);
         } else {
-            enc_mask = vsetq_lane_u64(0xFFFFFFFFFFFFFFFFul >> (zero_bits-64), enc_mask, 0);
+            enc_mask = vsetq_lane_u64(0xFFFFFFFFFFFFFFFFul >> (zero_bits&63), enc_mask, 0);
             enc_mask = vsetq_lane_u64(0, enc_mask, 1);
         }
 
@@ -1446,7 +1446,7 @@ static operation_result_t aes_gcm_dec_128_kernel(uint8_t * ciphertext, uint64_t 
             enc_mask = vsetq_lane_u64(0xFFFFFFFFFFFFFFFFul, enc_mask, 0);
             enc_mask = vsetq_lane_u64(0xFFFFFFFFFFFFFFFFul >> zero_bits, enc_mask, 1);
         } else {
-            enc_mask = vsetq_lane_u64(0xFFFFFFFFFFFFFFFFul >> zero_bits, enc_mask, 0);
+            enc_mask = vsetq_lane_u64(0xFFFFFFFFFFFFFFFFul >> (zero_bits&63), enc_mask, 0);
             enc_mask = vsetq_lane_u64(0, enc_mask, 1);
         }
 
@@ -1622,7 +1622,7 @@ static operation_result_t aes_gcm_dec_192_kernel(uint8_t * ciphertext, uint64_t 
             enc_mask = vsetq_lane_u64(0xFFFFFFFFFFFFFFFFul, enc_mask, 0);
             enc_mask = vsetq_lane_u64(0xFFFFFFFFFFFFFFFFul >> zero_bits, enc_mask, 1);
         } else {
-            enc_mask = vsetq_lane_u64(0xFFFFFFFFFFFFFFFFul >> zero_bits, enc_mask, 0);
+            enc_mask = vsetq_lane_u64(0xFFFFFFFFFFFFFFFFul >> (zero_bits&63), enc_mask, 0);
             enc_mask = vsetq_lane_u64(0, enc_mask, 1);
         }
 
@@ -1804,7 +1804,7 @@ static operation_result_t aes_gcm_dec_256_kernel(uint8_t * ciphertext, uint64_t 
             enc_mask = vsetq_lane_u64(0xFFFFFFFFFFFFFFFFul, enc_mask, 0);
             enc_mask = vsetq_lane_u64(0xFFFFFFFFFFFFFFFFul >> zero_bits, enc_mask, 1);
         } else {
-            enc_mask = vsetq_lane_u64(0xFFFFFFFFFFFFFFFFul >> zero_bits, enc_mask, 0);
+            enc_mask = vsetq_lane_u64(0xFFFFFFFFFFFFFFFFul >> (zero_bits&63), enc_mask, 0);
             enc_mask = vsetq_lane_u64(0, enc_mask, 1);
         }
 
